@@ -1,0 +1,591 @@
+{
+  "name": "Test webhooks",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1L4ZNqvLdTGcTYPCQKTmw9-nxByAM-ivHid5V4ZOyhQY",
+          "mode": "list",
+          "cachedResultName": "n8n test",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L4ZNqvLdTGcTYPCQKTmw9-nxByAM-ivHid5V4ZOyhQY/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1L4ZNqvLdTGcTYPCQKTmw9-nxByAM-ivHid5V4ZOyhQY/edit#gid=0"
+        },
+        "options": {
+          "columnsToWatch": [
+            "id"
+          ]
+        }
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -1020,
+        380
+      ],
+      "id": "f22a2804-0e8c-4830-a3a7-6ec6a1ff9ccc",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "2B4POAhvEQQ6ncyJ",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "url": "=https://www.{{ $node[\"Split In Batches\"].json[\"Domain\"] }}",
+        "options": {
+          "redirect": {
+            "redirect": {
+              "followRedirects": true
+            }
+          }
+        }
+      },
+      "id": "79ec882e-8411-4863-9463-1d6e6b2a342b",
+      "name": "HTTP Request",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [
+        -140,
+        540
+      ],
+      "typeVersion": 3,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "extractionValues": {
+          "values": [
+            {
+              "key": "body",
+              "cssSelector": "html"
+            }
+          ]
+        },
+        "options": {
+          "trimValues": false
+        }
+      },
+      "id": "ca71974b-11e4-426a-889d-3af5d4cde4f0",
+      "name": "HTML Extract",
+      "type": "n8n-nodes-base.htmlExtract",
+      "position": [
+        40,
+        540
+      ],
+      "typeVersion": 1,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combinationMode": "mergeByPosition",
+        "options": {}
+      },
+      "id": "5ed907d6-6997-499d-bb16-165a2c09d18e",
+      "name": "Merge",
+      "type": "n8n-nodes-base.merge",
+      "position": [
+        1700,
+        400
+      ],
+      "typeVersion": 2
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "if ($input.item.json.body){\n\n\n\n$input.item.json.content = $input.item.json.body.replaceAll('/^\\s+|\\s+$/g', '').replace('/(\\r\\n|\\n|\\r)/gm', \"\").replace(/\\s+/g, ' ')\n\n\n  $input.item.json.contentShort = $input.item.json.content.slice(0, 10000)\n}\n\nreturn $input.item"
+      },
+      "id": "8046dabb-3561-4d3f-a4a8-17804f840876",
+      "name": "Clean Content",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        200,
+        540
+      ],
+      "executeOnce": false,
+      "typeVersion": 1,
+      "alwaysOutputData": true,
+      "continueOnFail": true
+    },
+    {
+      "parameters": {
+        "operation": "update",
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1L4ZNqvLdTGcTYPCQKTmw9-nxByAM-ivHid5V4ZOyhQY/edit?gid=270476248#gid=270476248",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet5",
+          "mode": "name"
+        },
+        "dataMode": "autoMapInputData",
+        "columnToMatchOn": "Domain",
+        "options": {}
+      },
+      "id": "89519169-7afb-4677-8565-4a254a9f3841",
+      "name": "Update Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        2160,
+        440
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "97LEM408tIAGDoMR",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "mode": "runOnceForEachItem",
+        "jsCode": "// Add a new field called 'myNewField' to the\n// JSON of the item\n$input.item.json.value_proposition=JSON.parse($input.item.json.choices[0].message.content).value_proposition\n\n$input.item.json.industry=JSON.parse($input.item.json.choices[0].message.content).industry\n\n$input.item.json.market=JSON.parse($input.item.json.choices[0].message.content).market\n\n$input.item.json.target_audience=JSON.parse($input.item.json.choices[0].message.content).target_audience\n\nreturn $input.item;"
+      },
+      "id": "12f6d36e-e63f-4f28-b833-0212fd3b221a",
+      "name": "Parse JSON",
+      "type": "n8n-nodes-base.code",
+      "position": [
+        720,
+        540
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "https://docs.google.com/spreadsheets/d/1L4ZNqvLdTGcTYPCQKTmw9-nxByAM-ivHid5V4ZOyhQY/edit?usp=sharing",
+          "mode": "url"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "Sheet5",
+          "mode": "name"
+        },
+        "options": {}
+      },
+      "id": "dd35c7fa-776b-4967-8552-9ccdfca1fe9d",
+      "name": "Read Google Sheets",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [
+        -740,
+        380
+      ],
+      "typeVersion": 3,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "97LEM408tIAGDoMR",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "id": "9c57be8c-03da-4ac0-9dad-213f2ec6db12",
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [
+        -520,
+        380
+      ],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "unit": "seconds"
+      },
+      "id": "34ef702b-18a9-47de-a1c3-043eec460974",
+      "name": "Wait",
+      "type": "n8n-nodes-base.wait",
+      "position": [
+        2600,
+        640
+      ],
+      "webhookId": "d44bc024-1c21-44e0-b2b4-5cff6fb9f402",
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "method": "POST",
+        "url": "https://e2-demo-west.cloud.databricks.com/serving-endpoints/llama-3_1-8b/invocations",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n  \"messages\": [\n    {\n      \"role\": \"system\",\n      \"content\": \"Respond only in JSON with opening and closing curly brackets, don't explain.\"\n    },\n    {\n      \"role\": \"user\",\n      \"content\": \"This is the content of the website {{ $node['Split In Batches'].json['Domain'] }}:'{{ $json['contentShort'].replaceAll(/\"/g, '') }}'\\n\\nIn a JSON format:\\n\\n- Give me the value proposition of the company. In less than 25 words. In English. Casual Tone. Format is: '[Company Name] helps [target audience] [achieve desired outcome] and [additional benefit]'\\n\\n- Give me the industry of the company. (Classify using this industry list: [Agriculture, Arts, Construction, Consumer Goods, Education, Entertainment, Finance, Other, Health Care, Legal, Manufacturing, Media & Communications, Public Administration, Advertisements, Real Estate, Recreation & Travel, Retail, Software, Transportation & Logistics, Wellness & Fitness] if it's ambiguous between Sofware and Consumer Goods, prefer Consumer Goods)\\n\\n- Guess the target audience of each company.(Classify and choose 1 from this list: [sales teams, marketing teams, HR teams, customer Service teams, consumers, C-levels] Write it in lowercase)\\n\\n- Tell me if they are B2B or B2C\\n\\nformat should be:\\n{'value_proposition': value_proposition,\\n'industry': industry,\\n'target_audience': target_audience, \\n'market': market }\\n\\nJSON:\"\n    }],\n  \"max_tokens\": 1024\n}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        440,
+        540
+      ],
+      "id": "b10f83fb-90be-4b32-8907-6c3417e0a20b",
+      "name": "Databricks model serving",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Zwm9EfVqc0tKpgSK",
+          "name": "Databricks demo-west"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "a856c967-39ee-48eb-87c6-4bfac32f02b4",
+              "name": "value_proposition",
+              "value": "={{ $json.value_proposition }}",
+              "type": "string"
+            },
+            {
+              "id": "8256901f-30a4-4ddd-9d99-8a7e01fb5191",
+              "name": "industry",
+              "value": "={{ $json.industry }}",
+              "type": "string"
+            },
+            {
+              "id": "5f76bb94-185d-477d-9a92-0cd293e27a02",
+              "name": "market",
+              "value": "={{ $json.market }}",
+              "type": "string"
+            },
+            {
+              "id": "304210a5-facd-4f75-bab5-e0fcdd8a28a1",
+              "name": "target_audience",
+              "value": "={{ $json.target_audience }}",
+              "type": "string"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.set",
+      "typeVersion": 3.4,
+      "position": [
+        1440,
+        540
+      ],
+      "id": "49a5c8e8-5e7d-4b44-bf5a-62b4ee1ddf43",
+      "name": "Edit Fields"
+    },
+    {
+      "parameters": {
+        "method": "PUT",
+        "url": "https://e2-demo-west.cloud.databricks.com/api/2.0/fs/files/Volumes/main/demo_mlo/n8n/company-info.csv",
+        "authentication": "genericCredentialType",
+        "genericAuthType": "httpHeaderAuth",
+        "sendBody": true,
+        "contentType": "raw",
+        "rawContentType": "text/csv",
+        "body": "={{ $input.item.binary.data.data.base64Decode() }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.httpRequest",
+      "typeVersion": 4.2,
+      "position": [
+        2180,
+        160
+      ],
+      "id": "b82743d5-9aa9-46b7-916a-e05f5f376080",
+      "name": "HTTP Request1",
+      "credentials": {
+        "httpHeaderAuth": {
+          "id": "Zwm9EfVqc0tKpgSK",
+          "name": "Databricks demo-west"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "headerRow": true
+        }
+      },
+      "type": "n8n-nodes-base.convertToFile",
+      "typeVersion": 1.1,
+      "position": [
+        1920,
+        160
+      ],
+      "id": "48a8919b-3912-4dcc-8b14-3dd30e372423",
+      "name": "Convert to File"
+    },
+    {
+      "parameters": {
+        "trigger": [
+          "app_mention"
+        ],
+        "watchWorkspace": true,
+        "options": {}
+      },
+      "type": "n8n-nodes-base.slackTrigger",
+      "typeVersion": 1,
+      "position": [
+        -660,
+        180
+      ],
+      "id": "3a27315d-c5c0-4dd5-bc1b-c509bf468787",
+      "name": "Slack Trigger",
+      "webhookId": "553aab4f-7464-4fb1-90f6-db356e560f7c",
+      "credentials": {
+        "slackApi": {
+          "id": "OCZ6W9pBbP2YaOJl",
+          "name": "Slack account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "5533e15a-2aea-4ca9-b3ee-42aef917bd2b",
+        "responseMode": "responseNode",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -360,
+        80
+      ],
+      "id": "3898bbc4-ea04-472c-b9e2-a7995e9e93f5",
+      "name": "Webhook",
+      "webhookId": "5533e15a-2aea-4ca9-b3ee-42aef917bd2b"
+    },
+    {
+      "parameters": {
+        "respondWith": "text",
+        "responseBody": "={{ $json.challenge }}",
+        "options": {
+          "responseCode": 200,
+          "responseHeaders": {
+            "entries": [
+              {
+                "name": "Content-type",
+                "value": "text/plain"
+              }
+            ]
+          }
+        }
+      },
+      "type": "n8n-nodes-base.respondToWebhook",
+      "typeVersion": 1.1,
+      "position": [
+        -140,
+        80
+      ],
+      "id": "e98a4909-fab5-4ef3-b3f0-e41b72ece994",
+      "name": "Respond to Webhook"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "Read Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request": {
+      "main": [
+        [
+          {
+            "node": "HTML Extract",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTML Extract": {
+      "main": [
+        [
+          {
+            "node": "Clean Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Update Google Sheets",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Convert to File",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Clean Content": {
+      "main": [
+        [
+          {
+            "node": "Databricks model serving",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Update Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Parse JSON": {
+      "main": [
+        [
+          {
+            "node": "Edit Fields",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Read Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Wait": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Databricks model serving": {
+      "main": [
+        [
+          {
+            "node": "Parse JSON",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Edit Fields": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Wait",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Convert to File": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Respond to Webhook",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "42a3f390-41ae-4680-9022-e13408e4ef0e",
+  "meta": {
+    "instanceId": "fa8c16dfcd365450c4f7179ebddde94e24d1363d6aca7f29db25b74a138e3d59"
+  },
+  "id": "gWuHOKdbSvvUllbK",
+  "tags": []
+}
