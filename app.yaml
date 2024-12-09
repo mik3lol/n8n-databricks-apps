@@ -1,0 +1,7 @@
+env: 
+  - name: "N8N_PORT"
+    value: "8000"
+  - name: "N8N_HOST" 
+    value: "0.0.0.0"
+  - name: "WEBHOOK_URL"
+    value: "https://playground-2556758628403379.aws.databricksapps.com"
