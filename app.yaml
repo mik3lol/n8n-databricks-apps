@@ -1,7 +1,32 @@
-env: 
-  - name: "N8N_PORT"
-    value: "8000"
-  - name: "N8N_HOST" 
-    value: "0.0.0.0"
-  - name: "WEBHOOK_URL"
-    value: "https://playground-2556758628403379.aws.databricksapps.com"
+env:
+# N8N configuration
+- name: N8N_PORT
+  value: '8000'
+- name: N8N_HOST
+  value: 0.0.0.0
+- name: N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE
+  value: 'true'
+- name: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
+  value: 'false'
+
+# Database configuration
+- name: DB_TYPE
+  value: postgresdb
+- name: DB_POSTGRESDB_DATABASE
+  value: <postgres_db_name>
+- name: DB_POSTGRESDB_SCHEMA
+  value: <postgres_schema_name>
+- name: DB_POSTGRESDB_HOST
+  value: <postgres_host>
+- name: DB_POSTGRESDB_PORT
+  value: 5432
+
+# Database credentials and webhook configuration
+- name: DB_POSTGRESDB_USER
+  valueFrom: postgres-user
+- name: DB_POSTGRESDB_PASSWORD
+  valueFrom: postgres-password
+- name: WEBHOOK_URL
+  valueFrom: webhook-url
+- name: NGROK_AUTHTOKEN
+  valueFrom: ngrok-auth-token
