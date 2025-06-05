@@ -1,7 +1,7 @@
 {
-  "name": "localtunnel-test",
+  "name": "n8n-databricks-app",
   "version": "1.0.0",
-  "description": "Test application for localtunnel with databricks apps",
+  "description": "Run n8n as Databricks Apps",
   "main": "index.js",
   "dependencies": {
     "localtunnel": "^2.0.0",
