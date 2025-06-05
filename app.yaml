@@ -9,7 +9,9 @@ env:
 - name: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
   value: 'false'
 - name: WEBHOOK_URL
-  value: https://dapps.loca.lt # Note: Format is https://<subdomain>.loca.lt. If domain is taken by another app, localtunnel will provide a random domain
+  valueFrom: ngrok-url
+- name: NGROK_TOKEN
+  valueFrom: ngrok-token
 
 # Database configuration
 - name: DB_TYPE

@@ -4,14 +4,13 @@
   "description": "Run n8n as Databricks Apps",
   "main": "index.js",
   "dependencies": {
-    "localtunnel": "^2.0.0",
+    "ngrok": "^5.0.0-beta.2",
     "n8n": "^1.90.0"
   },
   "scripts": {
-    "tunnel": "lt --port 8000 --subdomain $(echo $WEBHOOK_URL | sed -E 's|https://([^.]+)\\.loca\\.lt|\\1|') | tee .webhook-url",
-    "get-password": "echo \"Tunnel password (IP): $(curl -s https://loca.lt/mytunnelpassword)\"",
-    "set-env": "while [ ! -s .webhook-url ]; do sleep 1; echo \"Waiting for tunnel...\"; done && rm .webhook-url",
+    "set-token": "ngrok config add-authtoken $NGROK_TOKEN",
+    "ngrok": "ngrok http --url=$(echo $WEBHOOK_URL | sed 's|https://||') 8000",
     "n8n": "n8n",
-    "start": "npm run get-password && npm run tunnel & npm run set-env && npm run n8n"
+    "start": "npm run set-token && npm run ngrok & npm run n8n"
   }
 }
