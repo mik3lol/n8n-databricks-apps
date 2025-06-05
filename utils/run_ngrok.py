@@ -1,83 +1,105 @@
 import time
 import atexit
-import sys
-from pyngrok import ngrok, conf
-import yaml
 import os
+from dataclasses import dataclass
+from typing import Optional
+from pyngrok import ngrok, conf
 
-# --- Configuration ---
-N8N_LOCAL_PORT = os.getenv('N8N_PORT', 8000)  # Default n8n port
-YAML_FILE_PATH = os.path.join(os.path.dirname(os.path.dirname(__file__)), 'app.yaml')
-# Optional: If ngrok binary isn't in PATH or you want to specify it
-# conf.get_default().ngrok_path = "/path/to/your/ngrok"
-# Optional: Set auth token programmatically if not configured via CLI
-# You usually configure this once via `ngrok config add-authtoken <token>`
-# ---------------------
+@dataclass
+class NgrokConfig:
+    """Configuration for ngrok tunnel."""
+    port: int
+    domain: Optional[str] = None
+    auth_token: Optional[str] = None
+    config_path: Optional[str] = None
 
-active_tunnel = None
+    @classmethod
+    def from_env(cls) -> 'NgrokConfig':
+        """Create config from environment variables."""
+        return cls(
+            port=int(os.getenv('N8N_PORT', '8000')),
+            domain=os.getenv('WEBHOOK_URL').replace('https://', ''),
+            auth_token=os.getenv('NGROK_AUTHTOKEN'),
+            config_path=os.getenv('NGROK_CONFIG_PATH')
+        )
 
-def shutdown_ngrok():
-    """Gracefully shuts down the ngrok tunnel."""
-    if active_tunnel:
-        print(f"Shutting down ngrok tunnel: {active_tunnel.public_url}")
-        try:
-            ngrok.disconnect(active_tunnel.public_url)
-            print("Ngrok tunnel disconnected.")
-        except Exception as e:
-            print(f"Error disconnecting ngrok: {e}")
-    # As a fallback, ensure all tunnels are closed if disconnect fails
-    # Pyngrok typically handles this on exit, but it's good practice
-    ngrok.kill()
-    print("Ngrok processes killed (if any were running).")
+class NgrokTunnel:
+    """Manages ngrok tunnel lifecycle."""
+    def __init__(self, config: NgrokConfig):
+        self.config = config
+        self.tunnel = None
+        self._configure_ngrok()
+        atexit.register(self.shutdown)
 
-# Register the shutdown function to be called on script exit
-atexit.register(shutdown_ngrok)
+    def _configure_ngrok(self):
+        """Configure ngrok settings."""
+        if self.config.config_path:
+            conf.get_default().config_path = self.config.config_path
+        if self.config.auth_token:
+            conf.get_default().auth_token = self.config.auth_token
 
-def write_ngrok_url_to_file(public_url):
-    """Writes the ngrok public URL to a file named ngrok_url (for dynamic URLs)."""
-    try:
-        # Write the public URL to a file
-        with open('/app/python/source_code/ngrok_url.txt', 'w') as file:
-            file.write(public_url)
-            print(f"Wrote ngrok URL to file: {public_url}")
-    except Exception as e:
-        print(f"Error writing ngrok URL to file: {e}")
+    def start(self) -> str:
+        """Start the ngrok tunnel and return the public URL."""
+        print(f"Starting ngrok tunnel for http://localhost:{self.config.port}...")
         
+        try:
+            tunnel_kwargs = {'addr': self.config.port}
+            if self.config.domain:
+                tunnel_kwargs['domain'] = self.config.domain
+            
+            self.tunnel = ngrok.connect(**tunnel_kwargs)
+            public_url = self.tunnel.public_url
+            
+            print("--------------------------------------------------------------")
+            print(f" * Public URL: {public_url}")
+            print(f" * Forwarding to: http://localhost:{self.config.port}")
+            print("--------------------------------------------------------------")
+            print("Use this Public URL as the 'Test URL' in your n8n Webhook node.")
+            print("Ngrok tunnel established!")
+            
+            return public_url
+            
+        except Exception as e:
+            print(f"Failed to start ngrok tunnel: {e}")
+            self.shutdown()
+            raise
 
-try:
-    print(f"Starting ngrok tunnel for http://localhost:{N8N_LOCAL_PORT}...")
+    def shutdown(self):
+        """Gracefully shut down the ngrok tunnel."""
+        if self.tunnel:
+            try:
+                print(f"Shutting down ngrok tunnel: {self.tunnel.public_url}")
+                ngrok.disconnect(self.tunnel.public_url)
+                print("Ngrok tunnel disconnected.")
+            except Exception as e:
+                print(f"Error disconnecting ngrok: {e}")
+            finally:
+                self.tunnel = None
+        
+        # As a fallback, ensure all tunnels are closed
+        ngrok.kill()
+        print("Ngrok processes killed (if any were running).")
 
-    # Start an HTTP tunnel on the specified port
-    # This blocks until the tunnel is established or fails
-    # active_tunnel = ngrok.connect(N8N_LOCAL_PORT, "http")
-    # active_tunnel = ngrok.connect(addr=N8N_LOCAL_PORT, 
-    #                               domain=os.getenv('WEBHOOK_URL'))
+    def run_forever(self):
+        """Run the tunnel indefinitely until interrupted."""
+        try:
+            self.start()
+            print("Press Ctrl+C to exit and shut down the tunnel.")
+            while True:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            print("\nCtrl+C detected. Shutting down...")
+        except Exception as e:
+            print(f"\nAn error occurred: {e}")
+            raise
+        finally:
+            self.shutdown()
 
-    # public_url = active_tunnel.public_url
-    # temp 
-    public_url = "https://test.ngrok.io"
-    
-    # Only needed if tunnel URL is dynamic
-    # write_ngrok_url_to_file(public_url)
-    
-    print("--------------------------------------------------------------")
-    print(f"Ngrok tunnel established!")
-    print(f" * Public URL: {public_url}")
-    print(f" * Forwarding to: http://localhost:{N8N_LOCAL_PORT}")
-    print("--------------------------------------------------------------")
-    print("Use this Public URL as the 'Test URL' in your n8n Webhook node.")
-    print("Press Ctrl+C to exit and shut down the tunnel.")
+def main():
+    """Main entry point for running ngrok as a standalone process."""
+    config = NgrokConfig.from_env()
+    tunnel = NgrokTunnel(config)
+    tunnel.run_forever()
 
-    # Keep the script running so the tunnel stays active.
-    # You could replace this with other logic if needed.
-    while True:
-        time.sleep(1)
-
-except KeyboardInterrupt:
-    print("\nCtrl+C detected. Shutting down...")
-    # atexit handler will take care of shutdown
-    sys.exit(0)
-except Exception as e:
-    print(f"\nAn error occurred: {e}")
-    # atexit handler will attempt cleanup
-    sys.exit(1)
+if __name__ == "__main__":
+    main()

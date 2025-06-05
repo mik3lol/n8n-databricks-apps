@@ -1,0 +1,12 @@
+{
+  "name": "localtunnel-test",
+  "version": "1.0.0",
+  "description": "Test application for localtunnel with databricks apps",
+  "main": "index.js",
+  "dependencies": {
+    "n8n": "^1.90.0"
+  },
+  "scripts": {
+    "start": "n8n"
+  }
+}

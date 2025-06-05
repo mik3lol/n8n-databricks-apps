@@ -182,8 +182,8 @@ class NodeJsEntrypoint:
         self._configure_sys_path()
         for command in self._commands:
             print(f"Running {command}")
-            # resp = self.npm_command_runner.run(command)
-            resp = self.npx_command_runner.run(command)
+            resp = self.npm_command_runner.run(command)
+            # resp = self.npx_command_runner.run(command)
             print(resp)
 
 
