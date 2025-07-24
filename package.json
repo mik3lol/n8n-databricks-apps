@@ -4,8 +4,8 @@
   "description": "Run n8n as Databricks Apps",
   "main": "index.js",
   "dependencies": {
-    "ngrok": "^5.0.0-beta.2",
-    "n8n": "^1.99.0"
+    "ngrok": "latest",
+    "n8n": "latest"
   },
   "scripts": {
     "set-token": "ngrok config add-authtoken $NGROK_TOKEN",

@@ -19,7 +19,7 @@ env:
 - name: EXECUTIONS_DATA_PRUNE_MAX_COUNT # Number of executions to store
   value: 20000
 
-# Supbase configuration
+# Supabase configuration
 - name: DB_TYPE
   value: postgresdb
 - name: DB_POSTGRESDB_DATABASE
