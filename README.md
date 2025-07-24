@@ -1,10 +1,10 @@
 # n8n Databricks Apps
 
-Self-host n8n in Databricks Apps. This repo provides Node.js installation, and container-ready configurations tailored for Databricks Apps. The project is designed to simplify workflow automation on Databricks by offering cross-platform support, easy setup, and integration with Databricks-specific features.
+Self-host [n8n](https://github.com/n8n-io/n8n) in [Databricks Apps](https://docs.databricks.com/aws/en/dev-tools/databricks-apps). This repo provides Node.js installation of n8n, and container-ready configurations tailored for Databricks Apps. The project eases n8n installation in Databricks.
 
 ## 🚀 Overview
 
-This project enables you to run n8n (a powerful workflow automation tool) on Databricks platforms by providing ready-to-deploy configuration for deploy n8n in Databricks Apps.
+This project enables you to run n8n (a powerful workflow automation tool) on Databricks Apps by providing ready-to-deploy configuration for deploy n8n in Databricks Apps.
 
 ## 📁 Project Structure
 
@@ -18,9 +18,8 @@ n8n-databricks-apps/
 
 ## 🛠️ Features
 
-- **n8n Installation**: Installs n8n via Node.js using Node runtime in Databricks Apps
-- **Webhook Integration**: Pre-configured webhook URL To enable webhook in n8n
-- **Container Ready**: Optimized for Databricks Apps
+- **n8n Installation**: Installs n8n via Node.js
+- **Webhook Integration**: Pre-configured [Ngrok](https://ngrok.com/) webhook URL (requires setup) to enable webhook in n8n
 
 ## 🚀 Quick Start
 
@@ -28,7 +27,7 @@ n8n-databricks-apps/
 
 - **Databricks Apps**: To host n8n, with proper access to secrets as resources
 - **Ngrok Account**: Free or paid account with a reserved static URL and API token
-- **Supabase Database**: PostgreSQL database to persist n8n workflow executions, history, and credentials. Can also use other databases.
+- **Supabase Database**: [Supabase](https://supabase.com/) Postgre database to persist n8n workflow executions, history, and credentials (can also use other databases)
 - **Secrets Configuration**: The following secrets must be configured in Databricks:
   - `n8n-encryption-key`: Encryption key for securing n8n data
   - `supabase-host`: Supabase database host URL
@@ -228,7 +227,7 @@ npm run n8n -- --tunnel
 For issues and questions:
 - Create an issue in the repository
 - Check the n8n documentation: https://docs.n8n.io/
-- Review Databricks documentation for Databricks-specific issues
+- Review [Databricks documentation](https://docs.databricks.com/) for Databricks-specific issues
 
 ---
 
