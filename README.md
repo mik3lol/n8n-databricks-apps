@@ -153,8 +153,8 @@ Monitor [application logs](https://docs.databricks.com/aws/en/dev-tools/databric
 
 For issues and questions:
 - Create an issue in the [repository](https://github.com/mik3lol/n8n-databricks-apps)
-- Check the n8n documentation: https://docs.n8n.io/
-- Review [Databricks documentation](https://docs.databricks.com/) for Databricks-specific issues
+- Check [n8n documentation](https://docs.n8n.io/)
+- Check [Databricks documentation](https://docs.databricks.com/) for Databricks-specific issues
 
 ---
 
