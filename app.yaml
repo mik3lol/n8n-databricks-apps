@@ -1,7 +1,42 @@
-env: 
-  - name: "N8N_PORT"
-    value: "8000"
-  - name: "N8N_HOST" 
-    value: "0.0.0.0"
-  - name: "WEBHOOK_URL"
-    value: "https://playground-2556758628403379.aws.databricksapps.com"
+env:
+# N8N configuration
+- name: N8N_PORT
+  value: '8000'
+- name: N8N_HOST
+  value: 0.0.0.0
+- name: N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE
+  value: 'true'
+- name: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
+  value: 'false'
+- name: N8N_ENCRYPTION_KEY
+  valueFrom: n8n-encryption-key
+
+# Specify n8n workflow storage
+- name: EXECUTIONS_DATA_PRUNE # Activate automatic data pruning
+  value: true
+- name: EXECUTIONS_DATA_MAX_AGE # Number of hours after execution that n8n deletes data
+  value: 168
+- name: EXECUTIONS_DATA_PRUNE_MAX_COUNT # Number of executions to store
+  value: 20000
+
+# Supabase configuration
+- name: DB_TYPE
+  value: postgresdb
+- name: DB_POSTGRESDB_DATABASE
+  value: n8ndb
+- name: DB_POSTGRESDB_SCHEMA
+  value: n8n
+- name: DB_POSTGRESDB_PORT
+  value: 5432
+- name: DB_POSTGRESDB_HOST
+  valueFrom: supabase-host
+- name: DB_POSTGRESDB_USER
+  valueFrom: supabase-user
+- name: DB_POSTGRESDB_PASSWORD
+  valueFrom: supabase-pw
+
+# Webhook configuration
+- name: WEBHOOK_URL
+  valueFrom: webhook-url
+- name: NGROK_TOKEN
+  valueFrom: ngrok-token

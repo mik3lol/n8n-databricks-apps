@@ -1,0 +1,16 @@
+{
+  "name": "n8n-databricks-app",
+  "version": "1.0.0",
+  "description": "Run n8n as Databricks Apps",
+  "main": "index.js",
+  "dependencies": {
+    "ngrok": "latest",
+    "n8n": "latest"
+  },
+  "scripts": {
+    "set-token": "ngrok config add-authtoken $NGROK_TOKEN",
+    "ngrok": "ngrok http --url=$(echo $WEBHOOK_URL | sed 's|https://||') 8000",
+    "n8n": "n8n",
+    "start": "npm run set-token && npm run ngrok & npm run n8n"
+  }
+}
