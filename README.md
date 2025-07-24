@@ -1,10 +1,16 @@
 # n8n Databricks Apps
 
-Self-host [n8n](https://github.com/n8n-io/n8n) in [Databricks Apps](https://docs.databricks.com/aws/en/dev-tools/databricks-apps). This repo provides Node.js installation of n8n, and container-ready configurations tailored for Databricks Apps. The project eases n8n installation in Databricks.
+Self-host [n8n](https://github.com/n8n-io/n8n) in [Databricks Apps](https://docs.databricks.com/aws/en/dev-tools/databricks-apps). This repo provides Node.js installation of n8n, and container-ready configurations tailored for Databricks Apps. Works in both [Databricks Free Edition](https://docs.databricks.com/aws/en/getting-started/free-edition) and paid versions.
 
 ## 🚀 Overview
 
-This project enables you to run n8n (a powerful workflow automation tool) on Databricks Apps by providing ready-to-deploy configuration for deploy n8n in Databricks Apps.
+This project enables you to run [n8n](https://github.com/n8n-io/n8n) (a powerful workflow automation tool) in [Databricks Apps](https://docs.databricks.com/aws/en/dev-tools/databricks-apps) by providing ready-to-deploy setup Node.js project with configuration YAML. 
+
+## 🛠️ Features
+
+- **n8n Installation**: Installs n8n via Node.js
+- **Webhook Integration**: Uses [Ngrok](https://ngrok.com/) webhook URL (requires setup) to enable webhook in n8n
+- **Postgres Integration**: Uses Postgres database (e.g., [Supabase](https://supabase.com/) or [Databricks Lakebase](https://docs.databricks.com/aws/en/oltp/)) to persist n8n workflow executions, history, and credentials, ensuring reliable storage and recovery of application data.
 
 ## 📁 Project Structure
 
@@ -16,20 +22,15 @@ n8n-databricks-apps/
 └── .gitignore           # Git ignore rules
 ```
 
-## 🛠️ Features
-
-- **n8n Installation**: Installs n8n via Node.js
-- **Webhook Integration**: Pre-configured [Ngrok](https://ngrok.com/) webhook URL (requires setup) to enable webhook in n8n
-
 ## 🚀 Quick Start
 
 ### Prerequisites
 
-- **Databricks Apps**: To host n8n, with proper access to secrets as resources
-- **Ngrok Account**: Free or paid account with a reserved static URL and API token
-- **Supabase Database**: [Supabase](https://supabase.com/) Postgre database to persist n8n workflow executions, history, and credentials (can also use other databases)
+- **Databricks Account**: Free or paid [Databricks](https://docs.databricks.com/aws/en/getting-started/free-edition) account with access to Databricks Apps
+- **Ngrok Account**: Free or paid [Ngrok](https://ngrok.com/) account with a [reserved static URL](https://ngrok.com/blog-post/dns-zone-switch-configuration#now-try-out-a-branded-domain) and [authentication token](https://dashboard.ngrok.com/get-started/your-authtoken)
+- **Postgres Database**: Free or paid [Supabase](https://supabase.com/) account or other Postgres databases such as [Databricks Lakebase](https://docs.databricks.com/aws/en/oltp/)
 - **Secrets Configuration**: The following secrets must be configured in Databricks:
-  - `n8n-encryption-key`: Encryption key for securing n8n data
+  - `n8n-encryption-key`: (optional) user-defined encryption key for securing n8n credentials
   - `supabase-host`: Supabase database host URL
   - `supabase-user`: Supabase database username
   - `supabase-pw`: Supabase database password
@@ -38,21 +39,18 @@ n8n-databricks-apps/
 
 ### Installation
 
-1. **Clone the repository**:
-   ```bash
-   git clone <repository-url>
-   cd n8n-databricks-apps
-   ```
+1. **Clone this repository into your Databricks workspace ([doc](https://docs.databricks.com/aws/en/repos/repos-setup))**
 
-2. **Install dependencies**:
-   ```bash
-   npm install
-   ```
+2. **Create a custom Databricks Apps (if not exist) ([doc](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/create-custom-app))**
 
-3. **Run the application**:
-   ```bash
-   npm start
-   ```
+3. **Configure app**
+   
+   1. Sign up for [Ngrok](https://ngrok.com/) or other tunnel service and get tunnel URL and authentication token
+   2. Sign up for [Supabase](https://supabase.com/) and set up database and get host, user, and password
+   3. Add above credentials as [Databricks secrets](https://docs.databricks.com/aws/en/security/secrets/) and [make them app resources](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/secrets)
+   4. Update `app.yaml` to reference your secrets
+
+4. **Deploy n8n installation code to Databricks Apps ([doc](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/deploy))**
 
 The application will:
 - Install n8n and ngrok dependencies
@@ -94,7 +92,7 @@ The application uses the following environment variables (configured in `app.yam
 - `WEBHOOK_URL`: Webhook endpoint URL (from secrets)
 - `NGROK_TOKEN`: Ngrok authentication token (from secrets)
 
-### Available Scripts
+### Installation Script
 
 The `package.json` includes several useful scripts:
 
@@ -115,63 +113,6 @@ To modify n8n or ngrok versions, update the `dependencies` section in `package.j
   }
 }
 ```
-
-## 🔧 Development
-
-### Adding Workflows
-
-1. Create your n8n workflow in the n8n editor
-2. Export the workflow as JSON
-3. Save it in your preferred directory
-4. Import the workflow into your n8n instance
-
-### Extending the Application
-
-You can extend the application by adding new scripts to `package.json`:
-
-```json
-{
-  "scripts": {
-    "dev": "n8n start --tunnel",
-    "build": "npm install && npm run set-token",
-    "test": "echo \"No tests specified\""
-  }
-}
-```
-
-## 🚀 Deployment on Databricks
-
-### Using app.yaml
-
-The `app.yaml` file is configured for Databricks deployment with:
-
-- **N8N Configuration**: Port, host, and encryption settings
-- **Database Integration**: Complete Supabase PostgreSQL configuration
-- **Data Management**: Automatic pruning and execution limits
-- **Security**: Encrypted credentials and SSL configuration
-- **Webhook Setup**: Ngrok tunneling for external access
-- **Secrets Management**: Secure credential storage using Databricks secrets
-
-### Manual Deployment
-
-1. **Configure Secrets**: Set up all required secrets in Databricks:
-   - `n8n-encryption-key`: Generate a secure encryption key
-   - `supabase-host`: Your Supabase database host
-   - `supabase-user`: Database username
-   - `supabase-pw`: Database password
-   - `webhook-url`: Your webhook endpoint URL
-   - `ngrok-token`: Your ngrok authentication token
-
-2. **Upload Files**: Upload the project files to your Databricks workspace
-
-3. **Deploy**: Run `npm install && npm start` in your Databricks environment
-
-### Database Setup
-
-Before deployment, ensure your Supabase database has:
-- Database named `n8ndb`
-- Schema named `n8n`
-- Proper user permissions for the configured database user
 
 ## 🔍 Troubleshooting
 
@@ -198,8 +139,6 @@ Before deployment, ensure your Supabase database has:
    - Adjust `EXECUTIONS_DATA_MAX_AGE` for longer retention
    - Modify `EXECUTIONS_DATA_PRUNE_MAX_COUNT` for more executions
 
-### Debug Mode
-
 Enable verbose logging by running n8n with debug flags:
 
 ```bash
@@ -209,10 +148,6 @@ npm run n8n -- --debug
 # Run with tunnel mode for easier webhook testing
 npm run n8n -- --tunnel
 ```
-
-## 📄 License
-
-[Add your license information here]
 
 ## 🤝 Contributing
 
@@ -225,10 +160,10 @@ npm run n8n -- --tunnel
 ## 📞 Support
 
 For issues and questions:
-- Create an issue in the repository
+- Create an issue in the [repository](https://github.com/mik3lol/n8n-databricks-apps)
 - Check the n8n documentation: https://docs.n8n.io/
 - Review [Databricks documentation](https://docs.databricks.com/) for Databricks-specific issues
 
 ---
 
-**Note**: This project is designed for Databricks environments and may require adjustments for other platforms.
+**Note**: This project is designed for Databricks environments and will require adjustments for other platforms.
