@@ -116,6 +116,8 @@ To modify n8n or ngrok versions, update the `dependencies` section in `package.j
 
 ## 🔍 Troubleshooting
 
+Monitor [application logs](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/monitor) for app events and error messages.
+
 ### Common Issues
 
 1. **Database Connection Fails**
@@ -138,16 +140,6 @@ To modify n8n or ngrok versions, update the `dependencies` section in `package.j
 5. **Data Pruning Issues**
    - Adjust `EXECUTIONS_DATA_MAX_AGE` for longer retention
    - Modify `EXECUTIONS_DATA_PRUNE_MAX_COUNT` for more executions
-
-Enable verbose logging by running n8n with debug flags:
-
-```bash
-# Run n8n with debug logging
-npm run n8n -- --debug
-
-# Run with tunnel mode for easier webhook testing
-npm run n8n -- --tunnel
-```
 
 ## 🤝 Contributing
 
