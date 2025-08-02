@@ -31,7 +31,7 @@ n8n-databricks-apps/
 - **Postgres Database**: Free or paid [Supabase](https://supabase.com/) account or other Postgres databases such as [Databricks Lakebase](https://docs.databricks.com/aws/en/oltp/)
 - **Secrets Configuration**: The following secrets must be configured in Databricks:
   - `n8n-encryption-key`: (optional) user-defined encryption key for securing n8n credentials
-  - `supabase-host`: Supabase database host URL
+  - `supabase-host`: Supabase database host URL (use Session pooler credentials)
   - `supabase-user`: Supabase database username
   - `supabase-pw`: Supabase database password
   - `webhook-url`: Webhook endpoint URL
@@ -159,3 +159,4 @@ For issues and questions:
 ---
 
 **Note**: This project is designed for Databricks environments and will require adjustments for other platforms.
+
