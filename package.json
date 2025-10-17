@@ -5,12 +5,14 @@
   "main": "index.js",
   "dependencies": {
     "ngrok": "latest",
-    "n8n": "latest"
+    "n8n": "latest",
+    "n8n-nodes-databricks": "latest"
   },
   "scripts": {
     "set-token": "ngrok config add-authtoken $NGROK_TOKEN",
     "ngrok": "ngrok http --url=$(echo $WEBHOOK_URL | sed 's|https://||') 8000",
     "n8n": "n8n",
-    "start": "npm run set-token && npm run ngrok & npm run n8n"
+    "install-dbx-node": "npm i n8n-nodes-databricks --prefix /home/app/.n8n/nodes",
+    "start": "npm run set-token && npm run ngrok & npm run install-dbx-node && npm run n8n"
   }
 }

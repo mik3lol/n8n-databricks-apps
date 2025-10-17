@@ -1,6 +1,6 @@
 # n8n Databricks Apps
 
-Self-host [n8n](https://github.com/n8n-io/n8n) in [Databricks Apps](https://docs.databricks.com/aws/en/dev-tools/databricks-apps). This repo provides Node.js installation of n8n, and container-ready configurations tailored for Databricks Apps. Works in both [Databricks Free Edition](https://docs.databricks.com/aws/en/getting-started/free-edition) and paid versions.
+Run [n8n](https://github.com/n8n-io/n8n) in [Databricks Apps](https://docs.databricks.com/aws/en/dev-tools/databricks-apps). This repo provides Node.js installation of n8n, and container-ready configurations tailored for Databricks Apps. Works in both [Databricks Free Edition](https://docs.databricks.com/aws/en/getting-started/free-edition) and paid versions.
 
 ## 🚀 Overview
 
@@ -9,8 +9,9 @@ This project enables you to run [n8n](https://github.com/n8n-io/n8n) (a powerful
 ## 🛠️ Features
 
 - **n8n Installation**: Installs n8n via Node.js
+- **Databricks Community Node**: Automatically installs the [n8n-nodes-databricks](https://www.npmjs.com/package/n8n-nodes-databricks) community node (via `package.json`) for native Databricks integration
 - **Webhook Integration**: Uses [Ngrok](https://ngrok.com/) webhook URL (requires setup) to enable webhook in n8n
-- **Postgres Integration**: Uses Postgres database (e.g., [Supabase](https://supabase.com/) or [Databricks Lakebase](https://docs.databricks.com/aws/en/oltp/)) to persist n8n workflow executions, history, and credentials, ensuring reliable storage and recovery of application data.
+- **Postgres Integration**: Uses Postgres database (e.g., [Neon](https://neon.tech/) or [Databricks Lakebase](https://docs.databricks.com/aws/en/oltp/)) to persist n8n workflow executions, history, and credentials, ensuring reliable storage and recovery of application data.
 
 ## 📁 Project Structure
 
@@ -28,12 +29,12 @@ n8n-databricks-apps/
 
 - **Databricks Account**: Free or paid [Databricks](https://docs.databricks.com/aws/en/getting-started/free-edition) account with access to Databricks Apps
 - **Ngrok Account**: Free or paid [Ngrok](https://ngrok.com/) account with a [reserved static URL](https://ngrok.com/blog-post/dns-zone-switch-configuration#now-try-out-a-branded-domain) and [authentication token](https://dashboard.ngrok.com/get-started/your-authtoken)
-- **Postgres Database**: Free or paid [Supabase](https://supabase.com/) account or other Postgres databases such as [Databricks Lakebase](https://docs.databricks.com/aws/en/oltp/)
+- **Postgres Database**: Free or paid [Neon](https://neon.tech/) account or other Postgres databases such as [Databricks Lakebase](https://docs.databricks.com/aws/en/oltp/)
 - **Secrets Configuration**: The following secrets must be configured in Databricks:
   - `n8n-encryption-key`: (optional) user-defined encryption key for securing n8n credentials
-  - `supabase-host`: Supabase database host URL
-  - `supabase-user`: Supabase database username
-  - `supabase-pw`: Supabase database password
+  - `neon-host`: Neon database host URL
+  - `neon-user`: Neon database username
+  - `neon-pw`: Neon database password
   - `webhook-url`: Webhook endpoint URL
   - `ngrok-token`: Ngrok authentication token
 
@@ -46,7 +47,7 @@ n8n-databricks-apps/
 3. **Configure app**
    
    1. Sign up for [Ngrok](https://ngrok.com/) or other tunnel service and get tunnel URL and authentication token
-   2. Sign up for [Supabase](https://supabase.com/) and set up database and get host, user, and password
+   2. Sign up for [Neon](https://neon.tech/) and set up database and get host, user, and password
    3. Add above credentials as [Databricks secrets](https://docs.databricks.com/aws/en/security/secrets/) and [make them app resources](https://docs.databricks.com/aws/en/dev-tools/databricks-apps/secrets)
    4. Update `app.yaml` to reference your secrets
 
@@ -55,7 +56,7 @@ n8n-databricks-apps/
 The application will:
 - Install n8n and ngrok dependencies
 - Configure ngrok with your authentication token
-- Connect to Supabase database for data persistence
+- Connect to Neon database for data persistence
 - Launch n8n on port 8000 with encryption enabled
 - Set up ngrok tunnel for webhook access
 - Make n8n available at `http://0.0.0.0:8000`
@@ -73,7 +74,7 @@ The application uses the following environment variables (configured in `app.yam
 - `N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE`: Enable community package tools (default: true)
 - `N8N_ENCRYPTION_KEY`: Encryption key for securing credentials and data
 
-#### Database Configuration (Supabase)
+#### Database Configuration (Neon)
 - `DB_TYPE`: Database type (postgresdb)
 - `DB_POSTGRESDB_DATABASE`: Database name (n8ndb)
 - `DB_POSTGRESDB_SCHEMA`: Database schema (n8n)
@@ -121,7 +122,7 @@ Monitor [application logs](https://docs.databricks.com/aws/en/dev-tools/databric
 ### Common Issues
 
 1. **Database Connection Fails**
-   - Verify Supabase credentials in Databricks secrets
+   - Verify Neon credentials in Databricks secrets
    - Check database host accessibility
    - Ensure SSL configuration matches your setup
 

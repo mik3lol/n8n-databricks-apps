@@ -19,7 +19,7 @@ env:
 - name: EXECUTIONS_DATA_PRUNE_MAX_COUNT # Number of executions to store
   value: 20000
 
-# Supabase configuration
+# Neon configuration
 - name: DB_TYPE
   value: postgresdb
 - name: DB_POSTGRESDB_DATABASE
@@ -29,11 +29,11 @@ env:
 - name: DB_POSTGRESDB_PORT
   value: 5432
 - name: DB_POSTGRESDB_HOST
-  valueFrom: supabase-host
+  valueFrom: neon-host
 - name: DB_POSTGRESDB_USER
-  valueFrom: supabase-user
+  valueFrom: neon-user
 - name: DB_POSTGRESDB_PASSWORD
-  valueFrom: supabase-pw
+  valueFrom: neon-pw
 
 # Webhook configuration
 - name: WEBHOOK_URL
