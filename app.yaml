@@ -6,37 +6,22 @@ env:
   value: 0.0.0.0
 - name: N8N_COMMUNITY_PACKAGES_ALLOW_TOOL_USAGE
   value: 'true'
-- name: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED
-  value: 'false'
+
+# **ELIMINADO: DB_POSTGRESDB_SSL_REJECT_UNAUTHORIZED (no se necesita para SQLite)**
+
 - name: N8N_ENCRYPTION_KEY
-  valueFrom: n8n-encryption-key
+  # Es buena práctica mantener esta clave incluso para pruebas.
+  valueFrom: n8n-encryption-key 
 
-# Specify n8n workflow storage
-- name: EXECUTIONS_DATA_PRUNE # Activate automatic data pruning
-  value: true
-- name: EXECUTIONS_DATA_MAX_AGE # Number of hours after execution that n8n deletes data
-  value: 168
-- name: EXECUTIONS_DATA_PRUNE_MAX_COUNT # Number of executions to store
-  value: 20000
+# N8N Workflow Storage (SQLite por defecto)
+# **ELIMINADO: EXECUTIONS_DATA_PRUNE, EXECUTIONS_DATA_MAX_AGE, etc.**
+# *Nota: n8n usará SQLite por defecto si no se especifica DB_TYPE.*
 
-# Neon configuration
-- name: DB_TYPE
-  value: postgresdb
-- name: DB_POSTGRESDB_DATABASE
-  value: n8ndb
-- name: DB_POSTGRESDB_SCHEMA
-  value: n8n
-- name: DB_POSTGRESDB_PORT
-  value: 5432
-- name: DB_POSTGRESDB_HOST
-  valueFrom: neon-host
-- name: DB_POSTGRESDB_USER
-  valueFrom: neon-user
-- name: DB_POSTGRESDB_PASSWORD
-  valueFrom: neon-pw
+# **ELIMINADO: Toda la configuración de Neon (DB_TYPE, DB_POSTGRESDB_HOST, etc.)**
 
 # Webhook configuration
 - name: WEBHOOK_URL
+  # Mantener si vas a probar webhooks. Debe ser la URL de Databricks App.
   valueFrom: webhook-url
-- name: NGROK_TOKEN
-  valueFrom: ngrok-token
+  
+# **ELIMINADO: NGROK_TOKEN (no es necesario)**
